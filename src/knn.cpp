@@ -10,7 +10,7 @@
 
 std::vector<Point> seed(std::vector<Point> points)
 {
-    const int SAMPLE_SIZE = 1000;
+    const int SAMPLE_SIZE = 12;
 
     /** find centroid */
     Point center = Point::centroid(points);
@@ -26,7 +26,7 @@ std::vector<Point> seed(std::vector<Point> points)
 
     /** sample edge of cluster points */
     std::vector<Point> sample = std::vector<Point>(
-        points.begin() + points.size() - SAMPLE_SIZE, points.end());
+            points.begin() + points.size() - SAMPLE_SIZE, points.end());
 
     /** visual check of sample size */
     std::cout << "sampled " << sample.size() << " points" << std::endl;
@@ -39,9 +39,19 @@ std::vector<float> compute(std::vector<Point>& points)
     /** create container for Kth nearest neighbours of all points */
     std::vector<float> knn4;
 
-    /** different approaches to evaluating the knn */
-        knn4 = naive::run(points); // <-- ~ 49 ms O(N^2)
-        //knn4 = tree::run(N); // <-- ~ 49 ms O(N)
+    /** benchmarking ********************************************************************/
+    {
+        Timer timer;
+        //knn4 = naive::run(points); // <-- ~ ?? ms (100pts) | ~ 260 ms (1000pts)  ... O(N^2)
+        LOG(INFO) << timer.getDuration() << " ms : knn (naive) analysis";
+    }
+    {
+        Timer timer;
+        knn4 = kdtree::run(points); // <-- ~ ?? 101 ms O(n log n)
+        LOG(INFO) << timer.getDuration() << " ms : knn (kd tree) analysis";
+    }
+
+    /** benchmarking ********************************************************************/
 
     /** output 4th nearest neighbour of all points */
     io::csv(knn4);
