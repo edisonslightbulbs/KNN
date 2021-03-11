@@ -2,23 +2,15 @@
 #include <cmath>
 
 #include "io.h"
-#include "kdtreeknn.h"
+#include "kdtree.h"
 #include "knn.h"
-#include "naiveknn.h"
-
-void csv(std::vector<float>& knn)
-{
-    /** output path */
-    const std::string OUTPUT = IO::pwd() + "/build/knn.csv";
-
-    /** first: sort in descending order */
-    std::sort(knn.begin(), knn.end(), std::greater<>());
-    IO::write(knn, OUTPUT);
-}
+#include "naive.h"
+#include "timer.h"
+#include "logger.h"
 
 std::vector<Point> seed(std::vector<Point> points)
 {
-    const int SAMPLE_SIZE = 10;
+    const int SAMPLE_SIZE = 1000;
 
     /** find centroid */
     Point center = Point::centroid(points);
@@ -42,43 +34,37 @@ std::vector<Point> seed(std::vector<Point> points)
     return sample;
 }
 
-std::vector<float> compute(std::vector<Point>& points, const int& K)
+std::vector<float> compute(std::vector<Point>& points)
 {
-    /** sample points (todo: revise sampling strategy)  */
-    std::vector<Point> sample(seed(points));
+    /** create container for Kth nearest neighbours of all points */
+    std::vector<float> knn4;
 
-    /** list of Kth nearest neighbours for all points */
-    std::vector<float> knearest;
+    /** different approaches to evaluating the knn */
+        knn4 = naive::run(points); // <-- ~ 49 ms O(N^2)
+        //knn4 = tree::run(N); // <-- ~ 49 ms O(N)
 
-    /***************************** performance testing ************************/
-    /** 1. naive: */
-    knearest = naiveknn::run(sample, K);
-
-    /** 2. kdtree: */
-    kdtreeknn::run(sample, K);
-
-    /***************************** performance testing ************************/
-
-    csv(knearest); // graphable Kth nearest neighbours
-
-    return knearest;
+    /** output 4th nearest neighbour of all points */
+    io::csv(knn4);
+    return knn4;
 }
 
 float knn::elbow(std::vector<Point>& points)
 {
-    const int K = 5; // <---- 4 excluding core point
+    Timer timer;
+    /** sample points (todo: revise sampling strategy)  */
+    std::vector<Point> sample(seed(points));
 
-    /** Kth nearest distance for every point */
-    std::vector<float> knearest = compute(points, K);
+    /** distance of 4th nearest neighbour including core point */
+    std::vector<float> nn4 = compute(sample);
+    std::sort(nn4.begin(), nn4.end(), std::greater<>());
 
     /** use Snell's Law to evaluate relative angular distances */
     std::vector<std::pair<float, float>> angles;
-
-    float vec2;
-    for (int i = 1; i < knearest.size() - 1; i++) {
-        vec2 = knearest[i + 1] - knearest[i];
+    float vec2 = 0;
+    for (int i = 1; i < nn4.size() - 1; i++) {
+        vec2 = nn4[i + 1] - nn4[i];
         float angle = std::asin(vec2);
-        angles.emplace_back(knearest[i], angle);
+        angles.emplace_back(nn4[i], angle);
     }
 
     /** find the maximum absolute second derivative (masd) */
