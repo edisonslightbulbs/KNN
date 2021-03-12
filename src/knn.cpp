@@ -10,7 +10,7 @@
 
 std::vector<Point> seed(std::vector<Point> points)
 {
-    const int SAMPLE_SIZE = 12;
+    const int SAMPLE_SIZE = 5;
 
     /** find centroid */
     Point center = Point::centroid(points);
@@ -42,12 +42,12 @@ std::vector<float> compute(std::vector<Point>& points)
     /** benchmarking ********************************************************************/
     {
         Timer timer;
-        //knn4 = naive::run(points); // <-- ~ ?? ms (100pts) | ~ 260 ms (1000pts)  ... O(N^2)
+        knn4 = naive::run(points); // <-- ~ ?? ms (100pts) | ~ 260 ms (1000pts)  ... O(N^2)
         LOG(INFO) << timer.getDuration() << " ms : knn (naive) analysis";
     }
     {
         Timer timer;
-        knn4 = kdtree::run(points); // <-- ~ ?? 101 ms O(n log n)
+        kdtree::run(points); // <-- ~ ?? 101 ms O(n log n)
         LOG(INFO) << timer.getDuration() << " ms : knn (kd tree) analysis";
     }
 
