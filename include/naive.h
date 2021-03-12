@@ -37,9 +37,11 @@ std::vector<float> run(const std::vector<Point>& points)
     }
 
     /** pick out the Kth nearest neighbour */
-    for (auto& neighourhood : neighbourhoods) {
-        knn.emplace_back(neighourhood[K].m_distance.second);
+    for (auto& neighbourhood : neighbourhoods) {
+        std::cout << neighbourhood[0].m_id << ": " <<  neighbourhood[0] <<std::endl;
+        knn.emplace_back(neighbourhood[K].m_distance.second);
     }
+
 
     return knn;
 }
