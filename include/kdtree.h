@@ -4,173 +4,180 @@
 #include <map>
 #include <vector>
 
+#include "axis.h"
+#include "node.h"
 #include "point.h"
 
-static void sortx(std::vector<Point>& points)
+node* query(Point point, node* ptr_currentNearest, node* ptr_nextCandidate)
 {
-    std::sort(points.begin(), points.end(),
-              [](const Point& point, const Point& other) {
-                  return point.m_x < other.m_x;
-              });
-}
-
-static void sorty(std::vector<Point>& points)
-{
-    std::sort(points.begin(), points.end(),
-              [](const Point& point, const Point& other) {
-                  return point.m_y < other.m_y;
-              });
-}
-
-static void sortz(std::vector<Point>& points)
-{
-    std::sort(points.begin(), points.end(),
-              [](const Point& point, const Point& other) {
-                  return point.m_z < other.m_z;
-              });
-}
-
-struct node {
-    Point m_point;
-    node* m_left = nullptr;
-    node* m_right = nullptr;
-
-    node(Point& point, node* ptr_left, node* ptr_right)
-            : m_point(point)
-            , m_left(ptr_left)
-            , m_right(ptr_right)
-    {
+    /** return node closest to the pivot */
+    if (ptr_currentNearest == nullptr) {
+        return ptr_nextCandidate;
     }
-};
-
-std::vector<float> nearest(node* root, Point point, int d, std::vector<float> distances)
-{
-    if (root == nullptr) {
-        return distances;
+    if (ptr_nextCandidate == nullptr) {
+        return ptr_currentNearest;
     }
-    int axis = d % R;
-    node* next = nullptr;
-    //node* opposite = nullptr;
 
-    // std::cout << "---------------------------------------------" << std::endl;
-    // std::cout << root->m_point << std::endl;
+    float d1 = point.distance(ptr_currentNearest->m_point);
+    float d2 = point.distance(ptr_nextCandidate->m_point);
 
-    float distance = point.distance(root->m_point);
+    if (d1 < d2) {
+        return ptr_currentNearest;
+    }
+    return ptr_nextCandidate;
+}
 
-    /** sort point list by axis */
+node* nearest(node* ptr_root, Point point, int depth)
+{
+    if (ptr_root == nullptr) {
+        return nullptr;
+    }
+    /** Iff our best nearest neighbour candidate is a nullptr or,
+     *  Iff presiding node is a better nearest neighbour candidate:
+     *  update ptr_nextBest */
+    /** node with next best result */
+    node* ptr_next = nullptr;
+    node* ptr_opposite = nullptr;
+
+    node* ptr_candidate = nullptr;
+    node* ptr_best = nullptr;
+
+    /** set axis based on depth axis R = 3 [ define in point.cpp ] */
+    int axis = depth % R;
+
+    /** pick subsequent left or right search node based on depth */
     switch (axis) {
-        case 0:
-            std::cout << "x" << std::endl;
-            if (point.m_x < root->m_point.m_x) {
-                next = root->m_left;
-                //opposite = root->m_right;
-                distances.insert(distances.begin(), distance);
-            } else {
-                next = root->m_right;
-                //opposite = root->m_left;
-                distances.insert(distances.begin(), distance);
-            }
-        case 1:
-            std::cout << "y" << std::endl;
-            if (point.m_y < root->m_point.m_y) {
-                next = root->m_left;
-                //opposite = root->m_right;
-                distances.insert(distances.begin(), distance);
-            } else {
-                next = root->m_right;
-                //opposite = root->m_left;
-                distances.insert(distances.begin(), distance);
-            }
-        case 2:
-            std::cout << "z" << std::endl;
-            if (point.m_z < root->m_point.m_z) {
-                next = root->m_left;
-                //opposite = root->m_right;
-                distances.insert(distances.begin(), distance);
-            } else {
-                next = root->m_right;
-                //opposite = root->m_left;
-                distances.insert(distances.begin(), distance);
-            }
-        default:
-            break;
-    }
+    case 0:
+        if (point.m_x < ptr_root->m_point.m_x) {
+            ptr_next = ptr_root->m_left;
+            ptr_opposite = ptr_root->m_right;
+        } else {
+            ptr_next = ptr_root->m_right;
+            ptr_opposite = ptr_root->m_left;
+        }
 
-    return nearest(next, point, d + 1, distances);
+        /** nearest (node*, Point, int) return a best candidate nearest
+         * neighbour query (Point, node*, node*) determines which node, i.e.,
+         * between the current best candidate and the presiding root node. */
+        ptr_candidate
+            = query(point, nearest(ptr_next, point, depth + 1), ptr_root);
+
+        if (point.distance(ptr_candidate->m_point)
+            > abs(point.m_x) - ptr_root->m_point.m_x) {
+            ptr_candidate = query(
+                point, nearest(ptr_opposite, point, depth + 1), ptr_candidate);
+        }
+        ptr_best = ptr_candidate;
+
+    case 1:
+        if (point.m_y < ptr_root->m_point.m_y) {
+            ptr_next = ptr_root->m_left;
+            ptr_opposite = ptr_root->m_right;
+        } else {
+            ptr_next = ptr_root->m_right;
+            ptr_opposite = ptr_root->m_left;
+        }
+
+        ptr_candidate
+            = query(point, nearest(ptr_next, point, depth + 1), ptr_root);
+
+        if (point.distance(ptr_candidate->m_point)
+            > abs(point.m_y) - ptr_root->m_point.m_y) {
+            ptr_candidate = query(
+                point, nearest(ptr_opposite, point, depth + 1), ptr_candidate);
+        }
+        ptr_best = ptr_candidate;
+
+    case 2:
+        if (point.m_z < ptr_root->m_point.m_z) {
+            ptr_next = ptr_root->m_left;
+            ptr_opposite = ptr_root->m_right;
+        } else {
+            ptr_next = ptr_root->m_right;
+            ptr_opposite = ptr_root->m_left;
+        }
+
+        ptr_candidate
+            = query(point, nearest(ptr_next, point, depth + 1), ptr_root);
+
+        if (point.distance(ptr_candidate->m_point)
+            > abs(point.m_z) - ptr_root->m_point.m_z) {
+            ptr_candidate = query(
+                point, nearest(ptr_opposite, point, depth + 1), ptr_candidate);
+        }
+        ptr_best = ptr_candidate;
+    default:
+        break;
+    }
+    return ptr_best;
 }
 
-node* tree(std::vector<Point>& points, int d)
+void show(node* ptr_root)
+{
+    /** in-order (lnr) traversal */
+    if (ptr_root != nullptr) {
+        show(ptr_root->m_left);
+        std::cout << ptr_root->m_point << std::endl;
+        show(ptr_root->m_right);
+    }
+}
+
+node* tree(std::vector<Point>& points, int depth)
 {
     /** base condition for recursive function */
     if (points.empty()) {
         return nullptr;
     }
 
-/** set axis based on depth axis R = 3 [ define in point.cpp ] */
-    int axis = d % R;
+    /** set axis based on depth axis R = 3 [ define in point.cpp ] */
+    int axis = depth % R;
 
-    /** sort point list by axis */
+    /** sort point list by axis X, Y, Z */
     switch (axis) {
-        case 0:
-            sortx(points);
-        case 1:
-            sorty(points);
-        case 2:
-            sortz(points);
-        default:
-            break;
+    case 0:
+        axis::sortX(points);
+    case 1:
+        axis::sortY(points);
+    case 2:
+        axis::sortZ(points);
+    default:
+        break;
     }
-
-    /** find median */
+    /** slice at axis medians */
     int median = (int)points.size() / 2;
+    std::vector<Point> leftPoints;
+    std::vector<Point> rightPoints;
 
-    std::vector<Point> lVec;
-    std::vector<Point> rVec;
+    leftPoints = std::vector<Point>(points.begin(), points.begin() + median);
+    rightPoints = std::vector<Point>(points.begin() + median + 1, points.end());
 
-    /** slice at median appropriately */
-    if (points.size() >= 3) {
-        lVec = std::vector<Point>(points.begin(), points.begin() + median);
-        rVec = std::vector<Point>(points.begin() + median + 1, points.end());
-    } else if (points.size() == 2) {
-        lVec.push_back(points[0]);
-        rVec.push_back(points[1]);
-    }
-
-    /** recursively create tree nodes */
-    return new node(points[median], tree(lVec, d + 1), tree(rVec, d + 1));
+    /** recursively create tree nodes, viz, pre-oder (nlr) traversal */
+    return new node(points[median], tree(leftPoints, depth + 1),
+        tree(rightPoints, depth + 1));
 }
 
 namespace kdtree {
 
-    const int K = 5;
-    std::vector<float> run(std::vector<Point>& points)
-    {
-        /** construct kdtree */
-        node* root = tree(points, 0);
+const int DEPTH = 0;
 
-        std::cout << "---------------------------------------------" << std::endl;
-        int count = 0;
-        for (const auto& point : points){
-            std::cout << count << ": " << point << std::endl;
-            count ++;
-        }
-        std::cout << "---------------------------------------------" << std::endl;
-        std::cout << "root at tree is: " << root->m_point << std::endl;
-        int mean = (int) points.size()/2;
-        std::cout <<  "mean in vector is: " << points[mean] << std::endl;
-        std::cout << "---------------------------------------------" << std::endl;
+std::vector<float> run(std::vector<Point>& points)
+{
+    /** construct kdtree: n.b. root node recurse synonymous with kdtree */
+    node* ptr_root = tree(points, DEPTH);
+    // show(ptr_root);
+    // -------------------------tested
 
-
-        /** container for the four closest distances */
-        std::vector<float> nn(K);
-        std::vector<float> knn;
-
-        for(auto& point: points){
-            std::vector<float> distance = nearest(root, point, 0, nn);
-            knn.push_back(distance[4]);
-        }
-        return knn;
+    /** pointer to node with nearest neighbour */
+    for (int i = 0; i < 5; i++) {
+        node* ptr_nn = nearest(ptr_root, points[i], DEPTH);
+        std::cout << ptr_nn->m_point.m_id << ": " << ptr_nn->m_point
+                  << std::endl;
     }
+
+    /** container for the four knn */
+    std::vector<float> knn;
+
+    return knn;
+}
 }
 #endif /* KDTREE_H */
-
