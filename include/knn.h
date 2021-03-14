@@ -11,6 +11,6 @@ class knn {
 public:
     knn() = default;
     ~knn() = default;
-    static float elbow(std::vector<Point>& points);
+    static std::vector<float> compute(std::vector<Point>& points);
 };
 #endif /* KNN_H */
