@@ -17,7 +17,7 @@ std::vector<float> knn::compute(std::vector<Point>& points)
     {
         Timer timer;
         kdtree::run(points); // <-- ~ 101 ms O(n log n)
-        LOG(INFO) << timer.getDuration() << " ms : knn (kd tree) analysis";
+        LOG(INFO) << timer.getDuration() << " ms : knn (kd build) analysis";
     }
     io::csv(knn4);
     return knn4;
