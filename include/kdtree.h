@@ -135,11 +135,11 @@ node* tree(std::vector<Point>& points, int depth)
     /** sort point list by axis X, Y, Z */
     switch (axis) {
     case 0:
-        axis::sortX(points);
+        axis::sortXAxis(points);
     case 1:
-        axis::sortY(points);
+        axis::sortYAxis(points);
     case 2:
-        axis::sortZ(points);
+        axis::sortZAxis(points);
     default:
         break;
     }
