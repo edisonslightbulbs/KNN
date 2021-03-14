@@ -13,9 +13,9 @@ public:
     node();
 
     node(Point& point, node* ptr_left, node* ptr_right)
-            : m_point(point)
-            , m_left(ptr_left)
-            , m_right(ptr_right)
+        : m_point(point)
+        , m_left(ptr_left)
+        , m_right(ptr_right)
     {
     }
 };
