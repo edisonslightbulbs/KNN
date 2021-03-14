@@ -53,7 +53,7 @@ node* nearest(node* ptr_root, Point point, int depth)
             = query(point, nearest(ptr_next, point, depth + 1), ptr_root);
 
         if (point.distance(ptr_candidate->m_point)
-            > abs(point.m_x) - ptr_root->m_point.m_x) {
+            > std::abs(point.m_x - ptr_root->m_point.m_x)) {
             ptr_candidate = query(
                 point, nearest(ptr_opposite, point, depth + 1), ptr_candidate);
         }
@@ -70,7 +70,7 @@ node* nearest(node* ptr_root, Point point, int depth)
             = query(point, nearest(ptr_next, point, depth + 1), ptr_root);
 
         if (point.distance(ptr_candidate->m_point)
-            > abs(point.m_y) - ptr_root->m_point.m_y) {
+            > std::abs(point.m_y - ptr_root->m_point.m_y)) {
             ptr_candidate = query(
                 point, nearest(ptr_opposite, point, depth + 1), ptr_candidate);
         }
@@ -87,7 +87,7 @@ node* nearest(node* ptr_root, Point point, int depth)
             = query(point, nearest(ptr_next, point, depth + 1), ptr_root);
 
         if (point.distance(ptr_candidate->m_point)
-            > abs(point.m_z) - ptr_root->m_point.m_z) {
+            > std::abs(point.m_z - ptr_root->m_point.m_z)) {
             ptr_candidate = query(
                 point, nearest(ptr_opposite, point, depth + 1), ptr_candidate);
         }
@@ -140,6 +140,18 @@ node* build(std::vector<Point>& points, int depth)
         build(rightPoints, depth + 1));
 }
 
+Point test(std::vector<Point>& points, Point point){
+    Point nn;
+    float distance = __DBL_MAX__;
+    for(const auto& p : points){
+    if (point.distance(p) < distance){
+        distance = point.distance(p);
+         nn = p;
+    }
+   }
+    return nn;
+}
+
 namespace kdtree {
 
 std::vector<float> run(std::vector<Point>& points)
@@ -155,7 +167,15 @@ std::vector<float> run(std::vector<Point>& points)
     // show(ptr_root);
 
     /** find nearest neighbour */
-    node* ptr_nn = nearest(ptr_root, points[0], DEPTH);
+    nearest(ptr_root, points[0], DEPTH);
+
+    // /** tiny test */
+    // const Point search(points[100]);
+    // const Point nn1 = test(points, search); // <-- test
+
+    // std::cout << "search point: " << search << std::endl;
+    // std::cout << "kdtree knn = " << nearest(ptr_root, search, DEPTH)->m_point << std::endl;
+    // std::cout << "test knn = " << nn1 << std::endl;
 
     /** return the 4th nearest neighbour */
     std::vector<float> knn;
