@@ -8,7 +8,7 @@
 
 namespace axis {
 
-static void sortX(std::vector<Point>& points)
+static void sortXAxis(std::vector<Point>& points)
 {
     std::sort(points.begin(), points.end(),
         [](const Point& point, const Point& other) {
@@ -16,7 +16,7 @@ static void sortX(std::vector<Point>& points)
         });
 }
 
-static void sortY(std::vector<Point>& points)
+static void sortYAxis(std::vector<Point>& points)
 {
     std::sort(points.begin(), points.end(),
         [](const Point& point, const Point& other) {
@@ -24,7 +24,7 @@ static void sortY(std::vector<Point>& points)
         });
 }
 
-static void sortZ(std::vector<Point>& points)
+static void sortZAxis(std::vector<Point>& points)
 {
     std::sort(points.begin(), points.end(),
         [](const Point& point, const Point& other) {
