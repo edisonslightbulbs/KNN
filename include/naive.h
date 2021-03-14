@@ -15,36 +15,36 @@ const int K = 5;
 std::vector<float> run(const std::vector<Point>& points)
 {
     std::vector<float> knn;
-    std::vector<std::vector<Point>> neighbourhoods;
-
-    /** create mutable clone for evaluating and collecting neighbours */
-    std::vector<Point> neighbours(points);
+    std::vector<std::vector<Point>> neighoursLists;
 
     /** O(n^2) search */
     for (const auto& point : points) {
-        std::vector<Point> neighbourhood;
-        for (auto& neighbour : neighbours) {
-            float distance = neighbour.distance(point);
-            neighbour.m_distance = { point.m_id, distance };
-            neighbourhood.push_back(neighbour);
+
+        /** create mutable clone */
+        std::vector<Point> clone(points);
+
+        /** track the distance to ever other neighbour */
+        std::vector<Point> neighbours;
+        for (auto& otherPoint : clone) {
+            float distance = otherPoint.distance(point);
+            otherPoint.m_distance = { point.m_id, distance };
+            neighbours.push_back(otherPoint);
         }
-        neighbourhoods.push_back(neighbourhood);
+        neighoursLists.push_back(neighbours);
     }
 
     /** quick sort points using distances */
-    for (auto& neighourhood : neighbourhoods) {
+    for (auto& neighourhood : neighoursLists) {
         Point::sort(neighourhood);
     }
 
     /** pick out the Kth nearest neighbour */
-    for (auto& neighbourhood : neighbourhoods) {
-        std::cout << neighbourhood[0].m_id << ": " <<  neighbourhood[0] <<std::endl;
+    for (auto& neighbourhood : neighoursLists) {
+        // std::cout << neighbourhood[0].m_id << ": " <<  neighbourhood[0]
+        // <<std::endl;
         knn.emplace_back(neighbourhood[K].m_distance.second);
     }
-
-
     return knn;
 }
-
 }
 #endif /* NAIVEKNN_H */
