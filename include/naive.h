@@ -7,7 +7,7 @@
 #include "point.h"
 #include "timer.h"
 
-namespace naive {
+namespace unoptimized {
 
 /** K including core point, viz, 4 nearest neighbour */
 const int K = 5;
