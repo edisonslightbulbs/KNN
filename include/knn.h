@@ -6,11 +6,9 @@
 
 #include "point.h"
 
-class Knn {
+namespace knn {
 
-public:
-    Knn() = default;
-    ~Knn() = default;
-    static std::vector<float> compute(std::vector<Point>& points);
-};
+    std::vector<float> compute(std::vector<Point>& points);
+
+}
 #endif /* KNN_H */
