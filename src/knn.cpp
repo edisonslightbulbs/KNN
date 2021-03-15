@@ -5,20 +5,21 @@
 #include "timer.h"
 #include "logger.h"
 
-std::vector<float> knn::compute(std::vector<Point>& points)
+std::vector<float> Knn::compute(std::vector<Point>& points)
 {
     /** create container for Kth nearest neighbours of all points */
     std::vector<float> knn4;
     {
         Timer timer;
-        knn4 = naive::run(points); // <-- ~ ?? ms (100pts) | ~ 260 ms (1000pts)  ... O(N^2)
-        LOG(INFO) << timer.getDuration() << " ms : knn (naive) analysis";
+        knn4 = unoptimized::run(points); // ≈ 270 ms to process 1000pts | O(N^2)
+        LOG(INFO) << timer.getDuration() << " ms : knn (!unoptimized!)";
     }
-    {
-        Timer timer;
-        kdtree::run(points); // <-- ~ 101 ms O(n log n)
-        LOG(INFO) << timer.getDuration() << " ms : knn (kd build) analysis";
-    }
-    io::csv(knn4);
+    // {
+    //     Timer timer;
+    //     kdtree::run(points); // <-- ~ 101 ms O(n log n)
+    //     LOG(INFO) << timer.getDuration() << " ms : knn (kd build) analysis";
+    // }
+
+    // io::knns(knn4);
     return knn4;
 }

@@ -10,9 +10,7 @@
 #include "node.h"
 #include "point.h"
 
-std::set<Point> heap;
-
-node* query(Point point, node* ptr_nodeA, node* ptr_nodeB)
+Node* query(Point point, Node* ptr_nodeA, Node* ptr_nodeB)
 {
     /** base case: return whichever is not null */
     if (ptr_nodeA == nullptr) {
@@ -31,15 +29,15 @@ node* query(Point point, node* ptr_nodeA, node* ptr_nodeB)
     return ptr_nodeB;
 }
 
-node* nearest(node* ptr_root, Point point, int depth)
+Node* nearest(Node* ptr_root, Point point, int depth)
 {
     /** base case */
     if (ptr_root == nullptr) {
         return nullptr;
     }
-    node* ptr_next = nullptr;
-    node* ptr_opposite = nullptr;
-    node* ptr_candidate = nullptr;
+    Node* ptr_next = nullptr;
+    Node* ptr_opposite = nullptr;
+    Node* ptr_candidate = nullptr;
 
     /** for a point, use the depth and root node
      *  to find the nearest neighbours ... axis-wise search */
@@ -99,12 +97,12 @@ node* nearest(node* ptr_root, Point point, int depth)
         break;
     }
     /** heap nearest neighbours */
-    heap.insert(ptr_candidate->m_point);
-    /** return  nearest neighbour */
+    //heap.insert(ptr_candidate->m_point);
+
     return ptr_candidate;
 }
 
-void print(node* ptr_root)
+void print(Node* ptr_root)
 {
     /** in-order (lnr) traversal */
     if (ptr_root != nullptr) {
@@ -114,7 +112,7 @@ void print(node* ptr_root)
     }
 }
 
-node* build(std::vector<Point>& points, int depth)
+Node* build(std::vector<Point>& points, int depth)
 {
     /** base condition */
     if (points.empty()) {
@@ -142,38 +140,8 @@ node* build(std::vector<Point>& points, int depth)
     rightPoints = std::vector<Point>(points.begin() + median + 1, points.end());
 
     /** recursively build tree using pre-oder traversal (nlr) */
-    return new node(points[median], build(leftPoints, depth + 1),
-        build(rightPoints, depth + 1));
-}
-
-/** tiny test */
-void knnTest(std::vector<Point>& points)
-{
-    Point input(600, 5023, 809);
-    std::vector<Point> expected;
-
-    float distance = __DBL_MAX__;
-    for (auto point : points) {
-            distance = input.distance(point);
-            point.m_distance.second = distance;
-            expected.push_back(point);
-    }
-    Point::sort(expected);
-
-    node* ptr_root = build(points, 0);
-    std::cout << ".................................." << std::endl;
-    std::cout << "     input : " << input << std::endl;
-    std::cout << "  expected : " << expected[4] << std::endl;
-    std::cout << "actual (1) : " << nearest(ptr_root, input, 0)->m_point << std::endl;
-    std::cout << ".................................." << std::endl;
-    std::vector<Point> knn;
-    for(auto nn : heap){
-        distance = nn.distance(input);
-        nn.m_distance.second = distance;
-        knn.push_back(nn);
-    }
-    Point::sort(knn);
-    std::cout << "actual (2) : " << knn[4] << std::endl;
+    return new Node(points[median], build(leftPoints, depth + 1),
+                    build(rightPoints, depth + 1));
 }
 
 namespace kdtree {
@@ -185,21 +153,21 @@ std::vector<float> run(std::vector<Point>& points)
 
     /** build kdtree, [ pre-order traversal ]
      * n.b., root node holds entire tree */
-    node* ptr_root = build(points, DEPTH);
+    Node* ptr_root = build(points, DEPTH);
 
     /** print tree [ in-order traversal ]*/
     // show(ptr_root);
 
-    /** find nearest neighbour */
-    nearest(ptr_root, points[0], DEPTH);
+    /** distances to the 4th nearest neighbour */
+    for (auto point : points){
+    // nearest(ptr_root, point, DEPTH);
+    }
 
     /** tiny test */
-    knnTest(points);
+    //knnTest(points);
 
-    /** return the 4th nearest neighbour */
-    std::vector<float> knn;
-
-    return knn;
+    std::vector<float> knn4;
+    return knn4;
 }
 }
 #endif /* KDTREE_H */

@@ -6,11 +6,11 @@
 
 #include "point.h"
 
-class knn {
+class Knn {
 
 public:
-    knn() = default;
-    ~knn() = default;
+    Knn() = default;
+    ~Knn() = default;
     static std::vector<float> compute(std::vector<Point>& points);
 };
 #endif /* KNN_H */

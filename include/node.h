@@ -3,16 +3,16 @@
 
 #include "point.h"
 
-class node {
+class Node {
 
 public:
     Point m_point;
-    node* m_left = nullptr;
-    node* m_right = nullptr;
+    Node* m_left = nullptr;
+    Node* m_right = nullptr;
 
-    node();
+    Node();
 
-    node(Point& point, node* ptr_left, node* ptr_right)
+    Node(Point& point, Node* ptr_left, Node* ptr_right)
         : m_point(point)
         , m_left(ptr_left)
         , m_right(ptr_right)
