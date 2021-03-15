@@ -2,11 +2,15 @@
 #define KDTREE_H
 
 #include <map>
+#include <algorithm>
+#include <set>
 #include <vector>
 
 #include "axis.h"
 #include "node.h"
 #include "point.h"
+
+std::set<Point> heap;
 
 node* query(Point point, node* ptr_nodeA, node* ptr_nodeB)
 {
@@ -94,6 +98,8 @@ node* nearest(node* ptr_root, Point point, int depth)
     default:
         break;
     }
+    /** heap nearest neighbours */
+    heap.insert(ptr_candidate->m_point);
     /** return  nearest neighbour */
     return ptr_candidate;
 }
@@ -140,16 +146,34 @@ node* build(std::vector<Point>& points, int depth)
         build(rightPoints, depth + 1));
 }
 
-Point test(std::vector<Point>& points, Point point){
-    Point nn;
+/** tiny test */
+void knnTest(std::vector<Point>& points)
+{
+    Point input(600, 5023, 809);
+    std::vector<Point> expected;
+
     float distance = __DBL_MAX__;
-    for(const auto& p : points){
-    if (point.distance(p) < distance){
-        distance = point.distance(p);
-         nn = p;
+    for (auto point : points) {
+            distance = input.distance(point);
+            point.m_distance.second = distance;
+            expected.push_back(point);
     }
-   }
-    return nn;
+    Point::sort(expected);
+
+    node* ptr_root = build(points, 0);
+    std::cout << ".................................." << std::endl;
+    std::cout << "     input : " << input << std::endl;
+    std::cout << "  expected : " << expected[4] << std::endl;
+    std::cout << "actual (1) : " << nearest(ptr_root, input, 0)->m_point << std::endl;
+    std::cout << ".................................." << std::endl;
+    std::vector<Point> knn;
+    for(auto nn : heap){
+        distance = nn.distance(input);
+        nn.m_distance.second = distance;
+        knn.push_back(nn);
+    }
+    Point::sort(knn);
+    std::cout << "actual (2) : " << knn[4] << std::endl;
 }
 
 namespace kdtree {
@@ -169,13 +193,8 @@ std::vector<float> run(std::vector<Point>& points)
     /** find nearest neighbour */
     nearest(ptr_root, points[0], DEPTH);
 
-    // /** tiny test */
-    // const Point search(points[100]);
-    // const Point nn1 = test(points, search); // <-- test
-
-    // std::cout << "search point: " << search << std::endl;
-    // std::cout << "kdtree knn = " << nearest(ptr_root, search, DEPTH)->m_point << std::endl;
-    // std::cout << "test knn = " << nn1 << std::endl;
+    /** tiny test */
+    knnTest(points);
 
     /** return the 4th nearest neighbour */
     std::vector<float> knn;
