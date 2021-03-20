@@ -1,8 +1,8 @@
 #ifndef KDTREE_H
 #define KDTREE_H
 
-#include <map>
 #include <algorithm>
+#include <map>
 #include <set>
 #include <vector>
 
@@ -97,7 +97,7 @@ Node* nearest(Node* ptr_root, Point point, int depth)
         break;
     }
     /** heap nearest neighbours */
-    //heap.insert(ptr_candidate->m_point);
+    // heap.insert(ptr_candidate->m_point);
 
     return ptr_candidate;
 }
@@ -141,7 +141,7 @@ Node* build(std::vector<Point>& points, int depth)
 
     /** recursively build tree using pre-oder traversal (nlr) */
     return new Node(points[median], build(leftPoints, depth + 1),
-                    build(rightPoints, depth + 1));
+        build(rightPoints, depth + 1));
 }
 
 namespace kdtree {
@@ -159,12 +159,12 @@ std::vector<float> run(std::vector<Point>& points)
     // show(ptr_root);
 
     /** distances to the 4th nearest neighbour */
-    for (auto point : points){
-    // nearest(ptr_root, point, DEPTH);
+    for (auto point : points) {
+        // nearest(ptr_root, point, DEPTH);
     }
 
     /** tiny test */
-    //knnTest(points);
+    // knnTest(points);
 
     std::vector<float> knn4;
     return knn4;
