@@ -7,8 +7,7 @@
 #include "point.h"
 
 namespace knn {
-
-    std::vector<float> compute(std::vector<Point>& points);
+std::vector<float> compute(std::vector<Point>& points);
 
 }
 #endif /* KNN_H */
