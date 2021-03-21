@@ -123,11 +123,11 @@ Node* build(std::vector<Point>& points, int depth)
     int axis = depth % R;
     switch (axis) {
     case 0:
-        axis::sortXAxis(points);
+        axis::sortX(points);
     case 1:
-        axis::sortYAxis(points);
+        axis::sortY(points);
     case 2:
-        axis::sortZAxis(points);
+        axis::sortZ(points);
     default:
         break;
     }
