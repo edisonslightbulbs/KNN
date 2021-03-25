@@ -25,10 +25,10 @@ std::vector<float> run(const std::vector<Point>& points)
 
         /** track the distance to ever other neighbour */
         std::vector<Point> neighbours;
-        for (auto& otherPoint : clone) {
-            float distance = otherPoint.distance(point);
-            otherPoint.m_distance = { point.m_id, distance };
-            neighbours.push_back(otherPoint);
+        for (auto& other : clone) {
+            float distance = other.distance(point);
+            other.m_distance = { point.m_id, distance };
+            neighbours.push_back(other);
         }
         neighoursLists.push_back(neighbours);
     }
@@ -40,9 +40,7 @@ std::vector<float> run(const std::vector<Point>& points)
 
     /** pick out the Kth nearest neighbour */
     for (auto& neighbourhood : neighoursLists) {
-        // std::cout << neighbourhood[0].m_id << ": " <<  neighbourhood[0]
-        // <<std::endl;
-        knn.emplace_back(neighbourhood[K].m_distance.second);
+        knn.push_back(neighbourhood[K].m_distance.second);
     }
     return knn;
 }
