@@ -1,9 +1,9 @@
+#include "knn.h"
 #include "io.h"
 #include "kdtree.h"
-#include "knn.h"
+#include "logger.h"
 #include "naive.h"
 #include "timer.h"
-#include "logger.h"
 
 std::vector<float> knn::compute(std::vector<Point>& points)
 {
@@ -14,12 +14,5 @@ std::vector<float> knn::compute(std::vector<Point>& points)
         knn4 = unoptimized::run(points); // ≈ 270 ms to process 1000pts | O(N^2)
         LOG(INFO) << timer.getDuration() << " ms : knn (!unoptimized!)";
     }
-    // {
-    //     Timer timer;
-    //     kdtree::run(points); // <-- ~ 101 ms O(n log n)
-    //     LOG(INFO) << timer.getDuration() << " ms : knn (kd build) analysis";
-    // }
-
-    // io::knns(knn4);
     return knn4;
 }
