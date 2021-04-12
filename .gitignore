@@ -1,0 +1,13 @@
+cmake/
+.idea/
+build/
+cmake-build-debug/
+
+*.write
+*.csv
+*.png
+*.ply
+*.log
+
+CMakeLists.txt
+src/main.cpp
