@@ -9,5 +9,9 @@ cmake-build-debug/
 *.ply
 *.log
 
+dataset.dat
+dataset.hdf5
+testset.dat
+
 CMakeLists.txt
 src/main.cpp
