@@ -1,4 +1,4 @@
-# Example implementation of tiny knn library using [nanoflann](https://github.com/jlblancoc/nanoflann)
+#### Example implementation of tiny knn interface using [nanoflann](https://github.com/jlblancoc/nanoflann)
 
 Massive thanks to [Jose](https://github.com/jlblancoc) for sharing this adaptation of [flann](https://github.com/mariusmuja/flann) 👏🍻🍻
 
@@ -6,7 +6,7 @@ Massive thanks to [Jose](https://github.com/jlblancoc) for sharing this adaptati
 
 ###### CMakeLists.txt
 
-```c
+```txt
 cmake_minimum_required(VERSION 3.11)
 project(knn)
 
@@ -155,6 +155,9 @@ std::vector<knn::t_point> readPlyFile()
     return points;
 }
 
+/** un-used and only place here to indicate how
+ *  nanoflann evaluates distances using the
+ *  squared result of evaluated L2 norms */
 float distance(knn::t_point point, knn::t_point other)
 {
     float x = point.x - other.x;
@@ -186,26 +189,33 @@ int main()
     }
     return 0;
 }
+```
+
+to collect the Nth nearest neighbours of all points.
+
+```cpp
+    /** query and collect Kth nearest neighbours of all points. */
+    std::vector<float> kthNn;
+
+    const int sample = points.size();
+    for(int i = 0; i < sample; i++){
+        int indexOfQueryPoint = i;
+        std::vector<std::pair<knn::t_point, float>> nn
+                = knn::compute(points, k, indexOfQueryPoint, bucket2NthNn);
+        kthNn.push_back(std::sqrt(nn[i].second));
+    }
 
 ```
 
-###### example pointcloud.ply
+### PLY file with 3D points is delimited by spaces 
 
+* e.g., 
+    
 ```ply
 12 -219 1387
  9 -219 1387
  9 -216 1387
-15 -219 1386
-12 -216 1386
-15 -216 1386
- 6 -219 1387
- 6 -216 1387
- 9 -222 1386
-.   .    .
 .   .    .
 .   .    .
 .   .    .
 ```
-
-
-

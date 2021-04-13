@@ -1,6 +1,6 @@
-cmake/
 .idea/
 build/
+cmake/
 cmake-build-debug/
 
 *.write
@@ -15,3 +15,8 @@ testset.dat
 
 CMakeLists.txt
 src/main.cpp
+src/io.cpp
+src/timer.cpp
+src/timer.h
+src/io.h
+src/logger.h
