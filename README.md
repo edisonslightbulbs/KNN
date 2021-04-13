@@ -207,9 +207,10 @@ to collect the Nth nearest neighbours of all points.
 
 ```
 
-### PLY file with 3D points is delimited by spaces 
+##### PLY file with 3D points is delimited by spaces  (not provided)
 
-* e.g., 
+Simply create your own data points making sure the `x, y, z,` values are space
+delimited as shown below.
     
 ```ply
 12 -219 1387
