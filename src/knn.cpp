@@ -31,21 +31,21 @@
 
 template <typename T>
 void toNanoflannPoint(
-    PointCloud<T>& point, const std::vector<knn::t_point>& points)
+    PointCloud<T>& point, const std::vector<Point>& points)
 {
     const size_t N = points.size();
     point.pts.resize(N);
     for (size_t i = 0; i < N; i++) {
-        point.pts[i].x = points[i].x;
-        point.pts[i].y = points[i].y;
-        point.pts[i].z = points[i].z;
+        point.pts[i].x = points[i].m_xyz[0];
+        point.pts[i].y = points[i].m_xyz[1];
+        point.pts[i].z = points[i].m_xyz[2];
     }
 }
 
 template <typename num_t>
-std::vector<std::pair<knn::t_point, float>> nanoflannKnn(
-    const std::vector<knn::t_point>& points, const size_t& indexOfQueryPoint,
-    const size_t& k, std::vector<std::pair<knn::t_point, float>>& bucket2NthNn)
+std::vector<std::pair<Point, float>> nanoflannKnn(
+    const std::vector<Point>& points, const size_t& indexOfQueryPoint,
+    const size_t& k, std::vector<std::pair<Point, float>>& bucket2NthNn)
 {
     const size_t N = points.size();
     PointCloud<num_t> cloud;
@@ -64,8 +64,8 @@ std::vector<std::pair<knn::t_point, float>> nanoflannKnn(
     toNanoflannPoint(cloud, points);
 
     /** parse query point */
-    num_t queryPoint[3] = { points[indexOfQueryPoint].x,
-        points[indexOfQueryPoint].y, points[indexOfQueryPoint].z };
+    num_t queryPoint[3] = { points[indexOfQueryPoint].m_xyz[0],
+        points[indexOfQueryPoint].m_xyz[1], points[indexOfQueryPoint].m_xyz[2] };
 
     /** knn search */
     size_t chunk_size = 100;
@@ -89,20 +89,19 @@ std::vector<std::pair<knn::t_point, float>> nanoflannKnn(
 
     /** collect results and return solution */
     for (size_t i = 0; i < resultSet.size(); ++i) {
-        knn::t_point point {};
-        point.x = cloud.pts[ret_index[i]].x;
-        point.y = cloud.pts[ret_index[i]].y;
-        point.z = cloud.pts[ret_index[i]].z;
+        Point point {};
+        point.m_xyz[0] = cloud.pts[ret_index[i]].x;
+        point.m_xyz[1] = cloud.pts[ret_index[i]].y;
+        point.m_xyz[2] = cloud.pts[ret_index[i]].z;
         bucket2NthNn.push_back({ point, out_dist_sqr[i] });
     }
     return bucket2NthNn;
 }
 
-std::vector<std::pair<knn::t_point, float>> knn::compute(
-    std::vector<t_point>& points, const int& k, const int& indexOfQueryPoint,
-    std::vector<std::pair<t_point, float>>& bucket2NthNn)
+std::vector<std::pair<Point, float>> knn::compute(
+    std::vector<Point>& points, const int& k, const int& indexOfQueryPoint,
+    std::vector<std::pair<Point, float>>& bucket2NthNn)
 {
-
     bucket2NthNn
         = nanoflannKnn<float>(points, indexOfQueryPoint, k, bucket2NthNn);
     return bucket2NthNn;
