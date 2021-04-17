@@ -30,7 +30,7 @@
 #endif
 
 template <typename T>
-void toNanoflannPoint(
+void castToNanoflannPoint(
     PointCloud<T>& point, const std::vector<Point>& points)
 {
     const size_t N = points.size();
@@ -61,11 +61,12 @@ std::vector<std::pair<Point, float>> nanoflannKnn(
         nanoflann::KDTreeSingleIndexAdaptorParams(10 /* max leaf */));
 
     /** adapt points to nanoflann::PointCloud<T> */
-    toNanoflannPoint(cloud, points);
+    castToNanoflannPoint(cloud, points);
 
     /** parse query point */
     num_t queryPoint[3] = { points[indexOfQueryPoint].m_xyz[0],
-        points[indexOfQueryPoint].m_xyz[1], points[indexOfQueryPoint].m_xyz[2] };
+        points[indexOfQueryPoint].m_xyz[1],
+        points[indexOfQueryPoint].m_xyz[2] };
 
     /** knn search */
     size_t chunk_size = 100;
@@ -83,23 +84,23 @@ std::vector<std::pair<Point, float>> nanoflannKnn(
     resultSet.init(ret_index, out_dist_sqr);
     index.findNeighbors(resultSet, queryPoint, nanoflann::SearchParams(10));
 
-    /** [ optional ] print to terminal
-     *  to use this change SHOW macro to 1 */
+    /** [ optional ]
+     *  to print results to terminal set SHOW 1 */
     KNN_RESULTS;
 
     /** collect results and return solution */
     for (size_t i = 0; i < resultSet.size(); ++i) {
-        Point point {};
-        point.m_xyz[0] = cloud.pts[ret_index[i]].x;
-        point.m_xyz[1] = cloud.pts[ret_index[i]].y;
-        point.m_xyz[2] = cloud.pts[ret_index[i]].z;
+        auto x = (float)cloud.pts[ret_index[i]].x;
+        auto y = (float)cloud.pts[ret_index[i]].y;
+        auto z = (float)cloud.pts[ret_index[i]].z;
+        Point point(x, y, z);
         bucket2NthNn.push_back({ point, out_dist_sqr[i] });
     }
     return bucket2NthNn;
 }
 
-std::vector<std::pair<Point, float>> knn::compute(
-    std::vector<Point>& points, const int& k, const int& indexOfQueryPoint,
+std::vector<std::pair<Point, float>> knn::compute(std::vector<Point>& points,
+    const int& k, const int& indexOfQueryPoint,
     std::vector<std::pair<Point, float>>& bucket2NthNn)
 {
     bucket2NthNn
