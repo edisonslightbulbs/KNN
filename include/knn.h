@@ -21,17 +21,13 @@ namespace knn {
  *    Index of the query point, i.e., index corresponding to first
  *    parameter
  *
- *  @param bucket2NthNn
- *    list of point-distance pairs.
- *
  *  @retval
  *     A list of point-distance pairs corresponding the nearest
  *     neighbours. The points and respective distances from a
  *     query point are sorted in ascending order.
  * */
 
-std::vector<std::pair<Point, float>> compute(std::vector<Point>& points,
-    const int& k, const int& indexOfQueryPoint,
-    std::vector<std::pair<Point, float>>& bucket2NthNn);
+std::vector<std::pair<Point, float>> compute(
+    std::vector<Point>& points, const int& k, const int& indexOfQueryPoint);
 }
 #endif /* KNN_H */
