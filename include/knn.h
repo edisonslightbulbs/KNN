@@ -4,13 +4,9 @@
 #include <string>
 #include <vector>
 
-namespace knn {
+#include "point.h"
 
-struct t_point {
-    float x;
-    float y;
-    float z;
-};
+namespace knn {
 
 /** compute
  *    Wraps nanoflann's knn implementation into a tiny interface
@@ -34,8 +30,8 @@ struct t_point {
  *     query point are sorted in ascending order.
  * */
 
-std::vector<std::pair<knn::t_point, float>> compute(
-    std::vector<t_point>& points, const int& k, const int& indexOfQueryPoint,
-    std::vector<std::pair<t_point, float>>& bucket2NthNn);
+std::vector<std::pair<Point, float>> compute(std::vector<Point>& points,
+    const int& k, const int& indexOfQueryPoint,
+    std::vector<std::pair<Point, float>>& bucket2NthNn);
 }
 #endif /* KNN_H */
