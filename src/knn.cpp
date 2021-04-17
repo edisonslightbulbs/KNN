@@ -45,7 +45,7 @@ void castToNanoflannPoint(
 template <typename num_t>
 std::vector<std::pair<Point, float>> nanoflannKnn(
     const std::vector<Point>& points, const size_t& indexOfQueryPoint,
-    const size_t& k, std::vector<std::pair<Point, float>>& bucket2NthNn)
+    const size_t& k)
 {
     const size_t N = points.size();
     PointCloud<num_t> cloud;
@@ -89,21 +89,19 @@ std::vector<std::pair<Point, float>> nanoflannKnn(
     KNN_RESULTS;
 
     /** collect results and return solution */
+    std::vector<std::pair<Point, float>> nnHeap;
     for (size_t i = 0; i < resultSet.size(); ++i) {
         auto x = (float)cloud.pts[ret_index[i]].x;
         auto y = (float)cloud.pts[ret_index[i]].y;
         auto z = (float)cloud.pts[ret_index[i]].z;
         Point point(x, y, z);
-        bucket2NthNn.push_back({ point, out_dist_sqr[i] });
+        nnHeap.push_back({ point, out_dist_sqr[i] });
     }
-    return bucket2NthNn;
+    return nnHeap;
 }
 
-std::vector<std::pair<Point, float>> knn::compute(std::vector<Point>& points,
-    const int& k, const int& indexOfQueryPoint,
-    std::vector<std::pair<Point, float>>& bucket2NthNn)
+std::vector<std::pair<Point, float>> knn::compute(
+    std::vector<Point>& points, const int& k, const int& indexOfQueryPoint)
 {
-    bucket2NthNn
-        = nanoflannKnn<float>(points, indexOfQueryPoint, k, bucket2NthNn);
-    return bucket2NthNn;
+    return nanoflannKnn<float>(points, indexOfQueryPoint, k);
 }
