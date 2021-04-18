@@ -1,4 +1,0 @@
-[submodule "nanoflann"]
-	path = nanoflann
-	url = https://github.com/jlblancoc/nanoflann.git
-    ignore = dirty
