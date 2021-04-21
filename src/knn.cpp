@@ -7,9 +7,9 @@
 #include "utils.h"
 
 /** change to 1 to print knn solution to terminal */
-#define SHOW 0
+#define PRINT_KNN 0
 
-#if SHOW == 1
+#if PRINT_KNN == 1
 #define KNN_RESULTS                                                            \
     std::cout << "num of points -> " << points.size() << std::endl;            \
     std::cout << "  query point -> (" << queryPoint[0] << ", "                 \
@@ -26,7 +26,7 @@
     }                                                                          \
     std::cout << std::endl
 #else
-#define KNN_RESULTS
+#define SHOW_RESULTS
 #endif
 
 template <typename T>
@@ -86,7 +86,7 @@ std::vector<std::pair<Point, float>> nanoflannKnn(
 
     /** [ optional ]
      *  to print results to terminal set SHOW 1 */
-    KNN_RESULTS;
+    SHOW_RESULTS;
 
     /** collect results and return solution */
     std::vector<std::pair<Point, float>> nnHeap;
