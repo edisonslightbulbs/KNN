@@ -22,3 +22,4 @@ src/io.h
 point/
 nanoflann/
 src/logger
+src/utility.hpp
