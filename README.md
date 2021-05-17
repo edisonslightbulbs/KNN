@@ -41,10 +41,9 @@ int main()
 ```
 
 The `Point` Class used in this example given below:
-```
-struct Point {
-    std::array<float, 3> m_xyz {};
-};
-```
+
+    struct Point {
+        std::array<float, 3> m_xyz {};
+    };
 
 The `readPoints` and `writePoints` functions are adaptable implementations and therefore left out.
