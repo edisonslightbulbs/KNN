@@ -7,9 +7,9 @@
 #include "utils.h"
 
 /** change to 1 to print knn solution to terminal */
-#define PRINT_KNN 0
+#define SHOW_KNN_RESULTS 0
 
-#if PRINT_KNN == 1
+#if SHOW_KNN_RESULTS == 1
 #define KNN_RESULTS                                                            \
     std::cout << "num of points -> " << points.size() << std::endl;            \
     std::cout << "  query point -> (" << queryPoint[0] << ", "                 \
@@ -84,8 +84,7 @@ std::vector<std::pair<Point, float>> nanoflannKnn(
     resultSet.init(ret_index, out_dist_sqr);
     index.findNeighbors(resultSet, queryPoint, nanoflann::SearchParams(10));
 
-    /** [ optional ]
-     *  to print results to terminal set SHOW 1 */
+    /** show results in terminal [ set SHOW_KNN_RESULTS 1 ] */
     SHOW_RESULTS;
 
     /** collect results and return solution */
