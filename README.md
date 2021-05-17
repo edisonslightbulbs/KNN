@@ -2,8 +2,7 @@
 
 Massive thanks to [Jose](https://github.com/jlblancoc) for sharing this adaptation of [flann](https://github.com/mariusmuja/flann) 👏🍻🍻
 
-In this example we find the 5th nearest neighbour of the first five to every other point. Typically, the Nth nearest neighbour of each point to every other point needs to be computed:
-an expensive operation  even with flann's impressive optimizations.
+In this illustration, we find the 5th nearest neighbor of the first five points given a set of points. Typically, the Nth nearest neighbor of each point to every other point needs to be computed: an expensive operation even with nannoflann's impressive optimizations
 
 ```
 int main()
