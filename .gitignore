@@ -20,4 +20,5 @@ src/timer.cpp
 src/timer.h
 src/io.h
 point/
-src/logger.hpoint/
+nanoflann/
+src/logger
