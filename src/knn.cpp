@@ -5,7 +5,7 @@
 #include "knn.h"
 #include "utils.h"
 
-#define SHOW_KNN_RESULTS 1
+#define SHOW_KNN_RESULTS 0
 #if SHOW_KNN_RESULTS == 1
 #define KNN_RESULTS                                                            \
     std::cout << "num of points -> " << points.size() << std::endl;            \
@@ -23,7 +23,7 @@
     }                                                                          \
     std::cout << std::endl
 #else
-#define SHOW_RESULTS
+#define KNN_RESULTS
 #endif
 
 template <typename T>
