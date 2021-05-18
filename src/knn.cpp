@@ -1,4 +1,3 @@
-
 #include <cmath>
 #include <iostream>
 #include <nanoflann.hpp>
@@ -6,9 +5,7 @@
 #include "knn.h"
 #include "utils.h"
 
-/** change to 1 to print knn solution to terminal */
-#define SHOW_KNN_RESULTS 0
-
+#define SHOW_KNN_RESULTS 1
 #if SHOW_KNN_RESULTS == 1
 #define KNN_RESULTS                                                            \
     std::cout << "num of points -> " << points.size() << std::endl;            \
@@ -50,15 +47,13 @@ std::vector<std::pair<Point, float>> nanoflannKnn(
     const size_t N = points.size();
     PointCloud<num_t> cloud;
 
-    /** construct a kd-tree index: */
+    /** alias kd-tree index */
     typedef nanoflann::KDTreeSingleIndexDynamicAdaptor<
         nanoflann::L2_Simple_Adaptor<num_t, PointCloud<num_t>>,
-        PointCloud<num_t>, 3 /* dim */
-        >
+        PointCloud<num_t>, 3>
         my_kd_tree_t;
 
-    my_kd_tree_t index(3 /*dim*/, cloud,
-        nanoflann::KDTreeSingleIndexAdaptorParams(10 /* max leaf */));
+    my_kd_tree_t index(3, cloud, nanoflann::KDTreeSingleIndexAdaptorParams(10));
 
     /** adapt points to nanoflann::PointCloud<T> */
     castToNanoflannPoint(cloud, points);
@@ -68,7 +63,7 @@ std::vector<std::pair<Point, float>> nanoflannKnn(
         points[indexOfQueryPoint].m_xyz[1],
         points[indexOfQueryPoint].m_xyz[2] };
 
-    /** knn search */
+    /** do knn */
     size_t chunk_size = 100;
     for (size_t i = 0; i < N; i = i + chunk_size) {
         size_t end = std::min(size_t(i + chunk_size), N - 1);
@@ -84,8 +79,7 @@ std::vector<std::pair<Point, float>> nanoflannKnn(
     resultSet.init(ret_index, out_dist_sqr);
     index.findNeighbors(resultSet, queryPoint, nanoflann::SearchParams(10));
 
-    /** show results in terminal [ set SHOW_KNN_RESULTS 1 ] */
-    SHOW_RESULTS;
+    KNN_RESULTS; // <-- set SHOW_RESULTS = 1 to print results
 
     /** collect results and return solution */
     std::vector<std::pair<Point, float>> nnHeap;
