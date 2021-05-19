@@ -76,7 +76,8 @@ int main()
     std::sort(heapDists.begin(), heapDists.end(), std::greater<>());
     const std::string file = pwd() + "/knn.csv";
     std::cout << file << std::endl;
-    write(heapDists, file);
+    writePoints(heapDists, file);
+
     return 0;
 }
 
