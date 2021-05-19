@@ -9,25 +9,23 @@
 namespace knn {
 
 /** compute
- *    Wraps nanoflann's knn implementation into a tiny interface
+ *    Computes the K nearest neighbours of a queryPoint.
  *
  *  @param points
  *    Set of 3D points (x, y, z).
  *
  *  @param k
- *    Value of K, i.e., number of neighbours
+ *    K value.
  *
- *  @param indexOfQueryPoint
- *    Index of the query point, i.e., index corresponding to first
- *    parameter
+ *  @param queryPoint
+ *    query point
  *
  *  @retval
- *     A list of point-distance pairs corresponding the nearest
- *     neighbours. The points and respective distances from a
- *     query point are sorted in ascending order.
+ *    The indexes of the nearest neighbors from closest
+ *    neighbor to furthest neighbour
  * */
 
-std::vector<std::pair<Point, float>> compute(
-    std::vector<Point>& points, const int& k, const int& indexOfQueryPoint);
+std::vector<int> compute(
+    std::vector<Point>& points, const Point& queryPoint, const int& k);
 }
 #endif /* KNN_H */
