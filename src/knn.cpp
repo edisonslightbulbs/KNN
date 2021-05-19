@@ -52,13 +52,12 @@ void print(const std::vector<Point>& points, const PointCloud<float>& cloud,
                   << "index: " << kIndex[i] << ",\t"
                   << "dist: " << distsSquared[i] << " (squared L2 distance)"
                   << std::endl;
-#endif
     }
+#endif
 }
 
 template <typename T>
-void castToNanoflannPoint(
-    PointCloud<T>& point, const std::vector<Point>& points)
+void toNanoflannPoint(PointCloud<T>& point, const std::vector<Point>& points)
 {
     const size_t N = points.size();
     point.pts.resize(N);
@@ -84,7 +83,7 @@ std::vector<int> nanoflannKnn(
     /** build kd-tree */
     kdTree index(3, cloud, nanoflann::KDTreeSingleIndexAdaptorParams(10));
 
-    castToNanoflannPoint(cloud, points);
+    toNanoflannPoint(cloud, points);
 
     int chunk_size = 100;
 
@@ -121,7 +120,7 @@ std::vector<float> nanoflannKnn(const std::vector<Point>& points,
     /** build kd-tree */
     kdTree index(3, cloud, nanoflann::KDTreeSingleIndexAdaptorParams(10));
 
-    castToNanoflannPoint(cloud, points);
+    toNanoflannPoint(cloud, points);
 
     int chunk_size = 100;
 
