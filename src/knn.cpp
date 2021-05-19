@@ -10,8 +10,12 @@ template <typename T> struct PointCloud {
     };
 
     std::vector<Point> pts;
-    inline size_t kdtree_get_point_count() const { return pts.size(); }
-    inline T kdtree_get_pt(const size_t idx, const size_t dim) const
+    [[nodiscard]] inline size_t kdtree_get_point_count() const
+    {
+        return pts.size();
+    }
+    [[nodiscard]] inline T kdtree_get_pt(
+        const size_t idx, const size_t dim) const
     {
         if (dim == 0)
             return pts[idx].x;
@@ -27,27 +31,6 @@ template <typename T> struct PointCloud {
     }
 };
 
-#define SHOW_KNN_RESULTS 0
-#if SHOW_KNN_RESULTS == 1
-#define KNN_RESULTS                                                            \
-    std::cout << "num of points -> " << points.size() << std::endl;            \
-    std::cout << "  query point -> (" << queryPoint[0] << ", "                 \
-              << queryPoint[1] << ", " << queryPoint[2] << ")" << std::endl;   \
-    std::cout << "searching for -> " << k << " nearest neighbours"             \
-              << std::endl;                                                    \
-    for (size_t i = 0; i < resultSet.size(); ++i) {                            \
-        std::cout << "#" << i << ",\t"                                         \
-                  << "index: " << ret_index[i] << ",\t"                        \
-                  << "dist: " << out_dist_sqr[i] << ",\t"                      \
-                  << "point: (" << cloud.pts[ret_index[i]].x << ", "           \
-                  << cloud.pts[ret_index[i]].y << ", "                         \
-                  << cloud.pts[ret_index[i]].z << ")" << std::endl;            \
-    }                                                                          \
-    std::cout << std::endl
-#else
-#define KNN_RESULTS
-#endif
-
 template <typename T>
 void castToNanoflannPoint(
     PointCloud<T>& point, const std::vector<Point>& points)
@@ -61,62 +44,68 @@ void castToNanoflannPoint(
     }
 }
 
-template <typename num_t>
-std::vector<std::pair<Point, float>> nanoflannKnn(
-    const std::vector<Point>& points, const size_t& indexOfQueryPoint,
-    const size_t& k)
+std::vector<int> nanoflannKnn(
+    const std::vector<Point>& points, const Point& queryPoint, const int& k)
 {
     const size_t N = points.size();
-    PointCloud<num_t> cloud;
+    PointCloud<float> cloud;
 
     /** alias kd-tree index */
     typedef nanoflann::KDTreeSingleIndexDynamicAdaptor<
-        nanoflann::L2_Simple_Adaptor<num_t, PointCloud<num_t>>,
-        PointCloud<num_t>, 3>
+        nanoflann::L2_Simple_Adaptor<float, PointCloud<float>>,
+        PointCloud<float>, 3>
         my_kd_tree_t;
 
+    /** build kd-tree */
     my_kd_tree_t index(3, cloud, nanoflann::KDTreeSingleIndexAdaptorParams(10));
 
-    /** adapt points to nanoflann::PointCloud<T> */
     castToNanoflannPoint(cloud, points);
 
-    /** parse query point */
-    num_t queryPoint[3] = { points[indexOfQueryPoint].m_xyz[0],
-        points[indexOfQueryPoint].m_xyz[1],
-        points[indexOfQueryPoint].m_xyz[2] };
+    int chunk_size = 100;
 
-    /** do knn */
-    size_t chunk_size = 100;
     for (size_t i = 0; i < N; i = i + chunk_size) {
         size_t end = std::min(size_t(i + chunk_size), N - 1);
-
-        /** Inserts all points from [i, end] */
         index.addPoints(i, end);
     }
+
     size_t removePointIndex = N - 1;
     index.removePoint(removePointIndex);
-    size_t ret_index[k];
-    num_t out_dist_sqr[k];
-    nanoflann::KNNResultSet<num_t> resultSet(k);
-    resultSet.init(ret_index, out_dist_sqr);
-    index.findNeighbors(resultSet, queryPoint, nanoflann::SearchParams(10));
+    size_t kIndex[k];
+    float distsSquared[k];
+    nanoflann::KNNResultSet<float> resultSet(k);
+    resultSet.init(kIndex, distsSquared);
 
-    KNN_RESULTS; // <-- set SHOW_RESULTS = 1 to print results
+    float point[3]
+        = { queryPoint.m_xyz[0], queryPoint.m_xyz[1], queryPoint.m_xyz[2] };
 
-    /** collect results and return solution */
-    std::vector<std::pair<Point, float>> nnHeap;
+    /**  search tree for point */
+    index.findNeighbors(resultSet, point, nanoflann::SearchParams(10));
+
+#define SHOW_KNN_RESULTS 1
+#if SHOW_KNN_RESULTS == 1
+    std::cout << "search space = " << points.size() << " points \t"
+              << " searching for the " << k << " nearest neighbors "
+              << std::endl;
     for (size_t i = 0; i < resultSet.size(); ++i) {
-        auto x = (float)cloud.pts[ret_index[i]].x;
-        auto y = (float)cloud.pts[ret_index[i]].y;
-        auto z = (float)cloud.pts[ret_index[i]].z;
-        Point point(x, y, z);
-        nnHeap.push_back({ point, out_dist_sqr[i] });
+        std::cout << "query point >> (" << point[0] << ", " << point[1] << ", "
+                  << point[2] << ") \t"
+                  << "nearest neighbour #" << i << ",\t"
+                  << "point >> (" << cloud.pts[kIndex[i]].x << ", "
+                  << cloud.pts[kIndex[i]].y << ", " << cloud.pts[kIndex[i]].z
+                  << ")"
+                  << "\t"
+                  << "index: " << kIndex[i] << ",\t"
+                  << "dist: " << distsSquared[i] << " (squared L2 distance)"
+                  << std::endl;
     }
-    return nnHeap;
+#endif
+
+    std::vector<int> heap(kIndex, kIndex + sizeof kIndex / sizeof kIndex[0]);
+    return heap;
 }
 
-std::vector<std::pair<Point, float>> knn::compute(
-    std::vector<Point>& points, const int& k, const int& indexOfQueryPoint)
+std::vector<int> knn::compute(
+    std::vector<Point>& points, const Point& queryPoint, const int& k)
 {
-    return nanoflannKnn<float>(points, indexOfQueryPoint, k);
+    return nanoflannKnn(points, queryPoint, k);
 }
