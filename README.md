@@ -38,11 +38,13 @@ In this illustration, we find the 5th nearest neighbor of the first five points 
 The `Point` Class used in this example given below:
 
     struct Point {
+
     std::array<float, 3> m_xyz {};
+
     Point(float x, float y, float z)
-    : m_xyz({ x, y, z })
-    {
-    }
+        : m_xyz({ x, y, z })
+        {
+        }
     };
 
 The `readPoints` and `writePoints` functions are adaptable implementations and therefore left out.
