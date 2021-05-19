@@ -4,6 +4,7 @@ Massive thanks to [Jose](https://github.com/jlblancoc) for sharing this adaptati
 
 In this illustration, we find the 5th nearest neighbor of the first five points (i.e., given a set of 3D points). Typically, the Nth nearest neighbor of each point to every other point needs to be computed: an expensive operation even with nannoflann's impressive optimizations.
 
+```cpp
     int main()
     {
         int k = 5;                                // K value
@@ -34,17 +35,20 @@ In this illustration, we find the 5th nearest neighbor of the first five points 
         write(knnQuery, file);
         return 0;
     }
+```
 
 The `Point` Class used in this example given below:
 
-    struct Point {
+```cpp
+struct Point {
 
-    std::array<float, 3> m_xyz {};
+std::array<float, 3> m_xyz {};
 
-    Point(float x, float y, float z)
-        : m_xyz({ x, y, z })
-        {
-        }
-    };
+Point(float x, float y, float z)
+    : m_xyz({ x, y, z })
+    {
+    }
+};
+```
 
 The `readPoints` and `writePoints` functions are adaptable implementations and therefore left out.
