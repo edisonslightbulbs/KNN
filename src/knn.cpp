@@ -99,8 +99,8 @@ std::vector<int> nanoflannKnn(
     nanoflann::KNNResultSet<float> resultSet(k);
     resultSet.init(kIndex, distsSquared);
 
-    float point[3]
-        = { queryPoint.m_xyz[0], queryPoint.m_xyz[1], queryPoint.m_xyz[2] };
+    float point[3] = { (float)queryPoint.m_xyz[0], (float)queryPoint.m_xyz[1],
+        (float)queryPoint.m_xyz[2] };
 
     /**  search tree for point */
     index.findNeighbors(resultSet, point, nanoflann::SearchParams(10));
@@ -139,8 +139,8 @@ std::vector<float> nanoflannKnn(const std::vector<Point>& points,
     /**  for heaping distances to the Kth nearest neighbour */
     std::vector<float> heap;
     for (const auto& queryPoint : queryPoints) {
-        float point[3]
-            = { queryPoint.m_xyz[0], queryPoint.m_xyz[1], queryPoint.m_xyz[2] };
+        float point[3] = { (float)queryPoint.m_xyz[0],
+            (float)queryPoint.m_xyz[1], (float)queryPoint.m_xyz[2] };
 
         /**  search tree for point */
         index.findNeighbors(resultSet, point, nanoflann::SearchParams(10));
